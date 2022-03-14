@@ -9,8 +9,20 @@ import db from "~/lib/db.server";
 // on the server before rendering to provide data to the route.
 type LoaderData = { items: Array<Beverage> };
 export const loader: LoaderFunction = async () => {
+  const todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+
   const data = {
-    items: await db.beverage.findMany(),
+    items: await db.beverage.findMany({
+      where: {
+        createdAt: {
+          gte: todayDate,
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    }),
   };
 
   return data;
